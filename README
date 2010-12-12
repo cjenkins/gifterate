@@ -1,0 +1,3 @@
+Project done in Clojure with Enlive to scrape Amazon wishlist data.
+
+See resources/index.html for instructions on use.
