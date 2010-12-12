@@ -7,14 +7,18 @@
 
     <p>This webservice can be used to obtain the data in a user's Amazon Wishlist in JSON format.  Affiliate ID's are spliced into the links for Amazon items and the wishlist mechanics are preserved so the recipient address is available to ship to and the item is marked 'purchased' on the wishlist.</p>
     
-    <p> To use: http://gifterate.appspot.com/wishlist/WISHLIST-ID/AFFILIATE-ID</p>
+    <p>To use: http://gifterate.appspot.com/wishlist/WISHLIST-ID/AFFILIATE-ID<br/>
+       or: http://gifterate.appspot.com/wishlist/email/EMAIL-ADDRESS/AFFILIATE-ID
+    </p>
     
     <p>Examples:<br/> 
       http://gifterate.appspot.com/wishlist/BUWBWH9K2H77/gifterate-20<br/>
       http://gifterate.appspot.com/wishlist/BUWBWH9K2H77
+      http://gifterate.appspot.com/wishlist/email/johndoe@amazon.com/gifterate-20<br/>
+      http://gifterate.appspot.com/wishlist/email/johndoe@amazon.com
     </p>
     
-    <p>If an invalid wishlist ID is entered or the server cannot retrieve the wishlist information for whatever reason, you will receive a JSON object of:<br/>
+    <p>If server cannot retrieve the wishlist information for whatever reason, you will receive a JSON object of:<br/>
       {"error":"Unable to retrieve wishlist data."}</p>
     
     <p>If a valid wishlist is entered you will receive an array of JSON objects of the following format:<br/>
