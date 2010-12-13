@@ -37,6 +37,9 @@
 (def *comment-selector*
      [[:span.commentValueText]])
 
+(def *picture-selector*
+     [[:td.productImage] [:a] [:img]])
+
 ;Utility selectors
 
 (def *num-pages-selector*
@@ -140,7 +143,8 @@
 	     priority (html/select item *priority-selector*)
 	     rating (html/select item *rating-selector*)
 	     num-ratings (html/select item *num-ratings-selector*)
-	     comment (html/select item *comment-selector*)]
+	     comment (html/select item *comment-selector*)
+	     picture (html/select item *picture-selector*)]
 	 {:item (first (:content (first product)))
 	  :link (:href (:attrs (first product)))
 	  :price (first (:content (first price)))
@@ -149,7 +153,8 @@
 	  :rating (:title (:attrs (first rating)))
 	  :num-ratings (when-let [num-ratings (first (:content (first num-ratings)))]
 			 (format-num-ratings num-ratings))
-	  :comment (first (:content (first comment)))})))))
+	  :comment (first (:content (first comment)))
+	  :picture (:src (:attrs (first picture)))})))))
 
 (defn wishlist-items
   "Retrieves the item, link, price and date added for all items on an Amazon wishlist.  If affiliate ID is
