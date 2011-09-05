@@ -1,13 +1,13 @@
 (ns com.giftcf.urlutil
   (:require [net.cgrand.enlive-html :as html]
-	    [clojure.contrib.string :as string])
-  (:import (java.net HttpURLConnection URL URLEncoder)
-	   (java.io BufferedReader InputStreamReader OutputStreamWriter)))
+	    [clojure.contrib.string :as string]
+	    [appengine-magic.services.url-fetch :as url-fetch])
+  (:import (java.net URLEncoder)
+	   (java.io InputStreamReader ByteArrayInputStream)))
 
 (defn get-url [url]
-  (try
-    (html/html-resource (URL. url))
-    (catch Exception e nil)))
+  (html/html-resource
+   (InputStreamReader. (ByteArrayInputStream. (:content (url-fetch/fetch url))))))
 
 (defn- encode-message [message]
   (apply str (interpose "&" (map #(str
@@ -15,16 +15,9 @@
 				   (URLEncoder/encode (string/as-str (second %)) "UTF-8")) message))))
 
 (defn post-url [url message]
-  (try
-    (let [connection (doto (.openConnection (URL. url))
-		       (.setDoOutput true)
-		       (.setRequestMethod "POST"))]
-      (with-open [writer (OutputStreamWriter. (.getOutputStream connection))]
-	(.write writer (encode-message message))
-	(.flush writer)
-	(with-open [reader (BufferedReader. (InputStreamReader. (.getInputStream connection)))]
-	  (let [response (html/html-resource reader)
-		final-url (.getURL connection)]
-	    (.disconnect connection)
-	    {:response response :final-url (.toString final-url)}))))
-    (catch Exception e nil)))
+  (let [encoded-message (encode-message message)
+	byte-message (.getBytes encoded-message)]
+    (let [response (url-fetch/fetch url :method :post :payload byte-message)]
+      {:response (html/html-resource
+		  (InputStreamReader. (ByteArrayInputStream. (:content response))))
+       :final-url (:final-url response)})))
