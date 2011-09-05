@@ -117,7 +117,9 @@
 (defn- format-date
   "Removes the 'Added ' from the added on date string."
   [date-string]
-  (.substring date-string 6))
+  (try
+    (.substring date-string 6)
+    (catch Exception e "n/a")))
 
 (defn- format-priority
   [priority-string]

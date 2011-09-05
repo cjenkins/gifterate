@@ -7,7 +7,7 @@
 
 (defn get-url [url]
   (html/html-resource
-   (InputStreamReader. (ByteArrayInputStream. (:content (url-fetch/fetch url))))))
+   (InputStreamReader. (ByteArrayInputStream. (:content (url-fetch/fetch url :deadline 10.0))))))
 
 (defn- encode-message [message]
   (apply str (interpose "&" (map #(str
@@ -17,7 +17,7 @@
 (defn post-url [url message]
   (let [encoded-message (encode-message message)
 	byte-message (.getBytes encoded-message)]
-    (let [response (url-fetch/fetch url :method :post :payload byte-message)]
+    (let [response (url-fetch/fetch url :method :post :payload byte-message :deadline 10.0)]
       {:response (html/html-resource
 		  (InputStreamReader. (ByteArrayInputStream. (:content response))))
        :final-url (:final-url response)})))
