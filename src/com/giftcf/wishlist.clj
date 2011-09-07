@@ -114,6 +114,12 @@
   [wishlist-data]
   (map #(zipmap (keys %) (replace {nil "n/a"} (vals %))) wishlist-data))
 
+(defn- filter-results
+  "Filter out all results that don't have a date added.  Amazon seems to have some
+   superfluous records in their returned HTML."
+  [wishlist-data]
+  (filter #(not= "n/a" (:date-added %)) wishlist-data))
+
 (defn- format-date
   "Removes the 'Added ' from the added on date string."
   [date-string]
@@ -137,26 +143,27 @@
 (defn- parse-wishlist-content
   [content]
   (let [items (html/select content *item-selector*)]
-    (replace-nil
-     (for [item items]
-       (let [product (html/select item *product-title-selector*)
-	     price (html/select item *price-selector*)
-	     date (html/select item *date-added-selector*)
-	     priority (html/select item *priority-selector*)
-	     rating (html/select item *rating-selector*)
-	     num-ratings (html/select item *num-ratings-selector*)
-	     comment (html/select item *comment-selector*)
-	     picture (html/select item *picture-selector*)]
-	 {:item (first (:content (first product)))
-	  :link (:href (:attrs (first product)))
-	  :price (first (:content (first price)))
-	  :date-added (format-date (first (:content (first date))))
-	  :priority (format-priority (first (:content (first priority))))
-	  :rating (:title (:attrs (first rating)))
-	  :num-ratings (when-let [num-ratings (first (:content (first num-ratings)))]
-			 (format-num-ratings num-ratings))
-	  :comment (first (:content (first comment)))
-	  :picture (:src (:attrs (first picture)))})))))
+    (filter-results
+     (replace-nil
+      (for [item items]
+	(let [product (html/select item *product-title-selector*)
+	      price (html/select item *price-selector*)
+	      date (html/select item *date-added-selector*)
+	      priority (html/select item *priority-selector*)
+	      rating (html/select item *rating-selector*)
+	      num-ratings (html/select item *num-ratings-selector*)
+	      comment (html/select item *comment-selector*)
+	      picture (html/select item *picture-selector*)]
+	  {:item (first (:content (first product)))
+	   :link (:href (:attrs (first product)))
+	   :price (first (:content (first price)))
+	   :date-added (format-date (first (:content (first date))))
+	   :priority (format-priority (first (:content (first priority))))
+	   :rating (:title (:attrs (first rating)))
+	   :num-ratings (when-let [num-ratings (first (:content (first num-ratings)))]
+			  (format-num-ratings num-ratings))
+	   :comment (first (:content (first comment)))
+	   :picture (:src (:attrs (first picture)))}))))))
 
 (defn wishlist-items
   "Retrieves the item, link, price and date added for all items on an Amazon wishlist.  If affiliate ID is
