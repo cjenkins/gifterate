@@ -29,7 +29,7 @@
      [[:span.priorityValueText]])
 
 (def *rating-selector*
-     [[:span.asinReviewsSummary] [:a] [:img]])
+     [[:span.asinReviewsSummary] [:a] [:span] [:span]])
 
 (def *num-ratings-selector*
      [[:span.crAvgStars] [:a (html/nth-child 2)]])
@@ -140,7 +140,7 @@
 
 ;Public API
 
-(defn- parse-wishlist-content
+(defn parse-wishlist-content
   [content]
   (let [items (html/select content *item-selector*)]
     (filter-results
@@ -159,7 +159,7 @@
 	   :price (first (:content (first price)))
 	   :date-added (format-date (first (:content (first date))))
 	   :priority (format-priority (first (:content (first priority))))
-	   :rating (:title (:attrs (first rating)))
+	   :rating (first (:content (first rating)))
 	   :num-ratings (when-let [num-ratings (first (:content (first num-ratings)))]
 			  (format-num-ratings num-ratings))
 	   :comment (first (:content (first comment)))
