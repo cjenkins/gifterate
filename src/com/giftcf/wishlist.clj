@@ -3,6 +3,7 @@
   (:require [net.cgrand.enlive-html :as html]
 	    [clojure.contrib.string :as string]))
 
+(def *amazon-site* "http://www.amazon.com")
 (def *wishlist-base-url* "http://www.amazon.com/gp/registry/wishlist/")
 (def *options* "?reveal=unpurchased&filter=all&layout=standard")
 
@@ -84,7 +85,7 @@
 (defn- add-wishlist-id
   "Adds the wishlist id to links that start with http://www.amazon.com"
   [link wishlist-id]
-  (if (.startsWith link "http://www.amazon.com")
+  (if (.startsWith link *amazon-site*)
     (str link "?colid=" wishlist-id)
     link))
 
@@ -97,9 +98,9 @@
     affiliate-id))
 
 (defn- add-affiliate-tag
-  "Adds an affiliate tag links that start with http://www.amazon.com"
+  "Adds an affiliate tag to links that start with http://www.amazon.com"
   [wish-item affiliate-id]
-  (if (.startsWith (:link wish-item) "http://www.amazon.com")
+  (if (.startsWith (:link wish-item) *amazon-site*)
     (update-in wish-item [:link] str "&tag=" (random-affiliate 0.1 affiliate-id))
     wish-item))
 
